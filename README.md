@@ -1,6 +1,6 @@
 # DynamicGEM: Dynamic graph to vector embedding
 
-I have made changes to remove the TIMERS dependency and to suit different graph formats. 
+I have made changes to remove the TIMERS and DynamicTRIAD dependency and to suit different graph formats. 
 
 Learning graph representations is a fundamental task aimed at capturing various properties of graphs in vector space. Most recent methods learn such representations for static networks. However, real world networks evolve over time and have varying dynamics. Capturing such evolution is key to predicting the properties of unseen networks. To understand how the network dynamics affect the prediction performance, various embedding approaches have been proposed. In this dynamicGEM package, we present some of the recently proposed algorithms. These algorithms include [Incremental SVD](https://pdfs.semanticscholar.org/4e8f/82b0741c2151d36f2201fc11b0b148beab60.pdf), [Rerun SVD](https://arxiv.org/pdf/1711.09541.pdf), [Optimal SVD](https://www.kdd.org/kdd2016/papers/files/rfp0184-ouA.pdf), [Dynamic TRIAD](http://yangy.org/works/dynamictriad/dynamic_triad.pdf), [Static AE](https://arxiv.org/pdf/1805.11273.pdf), [Dynamic AE](https://arxiv.org/pdf/1809.02657.pdf), [Dynamic RNN](https://arxiv.org/pdf/1809.02657.pdf), [Dynamic AERNN](https://arxiv.org/pdf/1809.02657.pdf). We have formatted the algorithms so that they can be easily compared with each other. This library is published as [DynamicGEM: A Library for Dynamic Graph Embedding Methods](https://arxiv.org/abs/1811.10734) [0]. 
 
