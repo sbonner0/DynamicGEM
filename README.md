@@ -2,14 +2,10 @@
 
 I have made changes to remove the TIMERS and DynamicTRIAD dependency and to suit different graph formats. 
 
-Learning graph representations is a fundamental task aimed at capturing various properties of graphs in vector space. Most recent methods learn such representations for static networks. However, real world networks evolve over time and have varying dynamics. Capturing such evolution is key to predicting the properties of unseen networks. To understand how the network dynamics affect the prediction performance, various embedding approaches have been proposed. In this dynamicGEM package, we present some of the recently proposed algorithms. These algorithms include [Incremental SVD](https://pdfs.semanticscholar.org/4e8f/82b0741c2151d36f2201fc11b0b148beab60.pdf), [Rerun SVD](https://arxiv.org/pdf/1711.09541.pdf), [Optimal SVD](https://www.kdd.org/kdd2016/papers/files/rfp0184-ouA.pdf), [Dynamic TRIAD](http://yangy.org/works/dynamictriad/dynamic_triad.pdf), [Static AE](https://arxiv.org/pdf/1805.11273.pdf), [Dynamic AE](https://arxiv.org/pdf/1809.02657.pdf), [Dynamic RNN](https://arxiv.org/pdf/1809.02657.pdf), [Dynamic AERNN](https://arxiv.org/pdf/1809.02657.pdf). We have formatted the algorithms so that they can be easily compared with each other. This library is published as [DynamicGEM: A Library for Dynamic Graph Embedding Methods](https://arxiv.org/abs/1811.10734) [0]. 
+Learning graph representations is a fundamental task aimed at capturing various properties of graphs in vector space. Most recent methods learn such representations for static networks. However, real world networks evolve over time and have varying dynamics. Capturing such evolution is key to predicting the properties of unseen networks. To understand how the network dynamics affect the prediction performance, various embedding approaches have been proposed. In this dynamicGEM package, we present some of the recently proposed algorithms. These algorithms include [Static AE](https://arxiv.org/pdf/1805.11273.pdf), [Dynamic AE](https://arxiv.org/pdf/1809.02657.pdf), [Dynamic RNN](https://arxiv.org/pdf/1809.02657.pdf), [Dynamic AERNN](https://arxiv.org/pdf/1809.02657.pdf). We have formatted the algorithms so that they can be easily compared with each other. This library is published as [DynamicGEM: A Library for Dynamic Graph Embedding Methods](https://arxiv.org/abs/1811.10734) [0]. 
 
 ## Implemented Methods
 dynamicGEM implements the following graph embedding techniques:
-* [Incremental SVD](https://pdfs.semanticscholar.org/4e8f/82b0741c2151d36f2201fc11b0b148beab60.pdf): This method utilizes a perturbation matrix capturing the dynamics of the graphs along with performing additive modification on the SVD. [1]
-* [Rerun SVD](https://arxiv.org/pdf/1711.09541.pdf): This method uses incremental SVD to create the dynamic graph embedding.  In addition to that, it uses a tolerance threshold to restart the optimal SVD calculations and avoid deviation in incremental graph embedding. [2]
-* [Optimal SVD](https://www.kdd.org/kdd2016/papers/files/rfp0184-ouA.pdf): This method decomposes adjacency matrix of the graph at each timestep using Singular Value Decomposition (SVD) to represent each node using thedlargest singular values. [3]
-* [Dynamic TRIAD](http://yangy.org/works/dynamictriad/dynamic_triad.pdf): This method utilizes the triadic closure process to generate a graphembedding that preserves structural and evolution patterns of the graph. [4]
 * [Static AE](https://arxiv.org/pdf/1805.11273.pdf): This method uses deep autoencoder to learn the representation of each node in the graph. [5]
 * [Dynamic AE](https://arxiv.org/pdf/1809.02657.pdf): This method models the interconnection of nodes within and acrosstime using multiple fully connected layers. It extends Static AE for dynamic graphs. [6]
 * [Dynamic RNN](https://arxiv.org/pdf/1809.02657.pdf): This method uses sparsely connected Long Short Term Memory(LSTM) networks to learn the embedding. [6]
@@ -25,8 +21,6 @@ Due to variation in graph formats used by different embedding algorithms, we hav
 * **DynamicGEM/graph_generation**: It constis  of functions to generate dynamic stochastic block model with diminishing community.  
 * **DynamicGEM/visualization**: It consists of functions for plotting the static and dynamic embeddings of the dataset.
 * **DynamicGEM/experiments**: The functions for hyper-paramter tuning is present in this folder. 
-* **DynamicGEM/TIMERS**: The matlab source code of the TIMERS along with added matlab modules for dataset preparation is present in this folder.
-* **DynamicGEM/dynamicTriad**: It consists of the dynamicTriad source code.
 
 ## Dependencies
 dynamicgem is tested to work on python 3.5. The module with working dependencies are listed as follows:
@@ -40,7 +34,6 @@ dynamicgem is tested to work on python 3.5. The module with working dependencies
 * Keras==2.2.4
 * Keras-Applications==1.0.6
 * Keras-Preprocessing==1.0.5
-* matlabruntimeforpython===R2017a
 * matplotlib==3.0.1
 * networkx==1.11
 * numpy==1.15.3
@@ -51,7 +44,6 @@ dynamicgem is tested to work on python 3.5. The module with working dependencies
 * six==1.11.0
 * sklearn==0.0
 * tensorflow==1.11.0  or tensorflow-gpu==1.11.0 (whichever is compatible with python 3.5)
-* Theano==1.0.3
     
 ## Viz:
 
@@ -72,35 +64,7 @@ The visualization of the the embedding is as follows:
    year={2018}
    }
    ```
-   [1] Brand, M. (2006). Fast low-rank modifications of the thin singular value decomposition. Linear algebra and its applications, 415(1), 20-30.
    ```
-   @article{BRAND200620,
-    title = "Fast low-rank modifications of the thin singular value decomposition",
-    journal = "Linear Algebra and its Applications",
-    volume = "415",
-    number = "1",
-    pages = "20 - 30",
-    year = "2006",
-    note = "Special Issue on Large Scale Linear and Nonlinear Eigenvalue Problems",
-    issn = "0024-3795",
-    doi = "https://doi.org/10.1016/j.laa.2005.07.021",
-    url = "http://www.sciencedirect.com/science/article/pii/S0024379505003812",
-    author = "Matthew Brand",
-    keywords = "Singular value decomposition, Sequential updating, Subspace tracking"
-    }
-   ```
-   [2] Zhang, Z., Cui, P., Pei, J., Wang, X., & Zhu, W. (2017). TIMERS: Error-Bounded SVD Restart on Dynamic Networks. arXiv                      preprint arXiv:1711.09541.
-   ```
-    @misc{zhang2017timers,
-    title={TIMERS: Error-Bounded SVD Restart on Dynamic Networks},
-    author={Ziwei Zhang and Peng Cui and Jian Pei and Xiao Wang and Wenwu Zhu},
-    year={2017},
-    eprint={1711.09541},
-    archivePrefix={arXiv},
-    primaryClass={cs.SI}
-    }
-   ```
-    
    [3] Ou, M., Cui, P., Pei, J., Zhang, Z., & Zhu, W. (2016, August). Asymmetric transitivity preserving graph embedding. In Proceedings of the 22nd ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 1105-1114). ACM.
    ```
     @inproceedings{ou2016asymmetric,
