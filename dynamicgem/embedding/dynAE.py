@@ -135,7 +135,7 @@ class DynAE(DynamicGraphEmbedding):
             )
 
         # Model
-        self._model = Model(input=[x_in, x_pred], output=x_diff)
+        self._model = Model(inputs=[x_in, x_pred], outputs=x_diff)
         sgd = SGD(lr=self._xeta, decay=1e-5, momentum=0.99, nesterov=True)
         adam = Adam(lr=self._xeta, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
         self._model.compile(optimizer=sgd, loss=weighted_mse_x)
@@ -150,8 +150,8 @@ class DynAE(DynamicGraphEmbedding):
                 self._n_prev_graphs,
                 True
             ),
-            nb_epoch=self._num_iter,
-            samples_per_epoch=(
+            epochs=self._num_iter,
+            steps_per_epoch=(
                 graphs[0].number_of_nodes() *  self._n_prev_graphs
             ) // self._n_batch,
             verbose=1
