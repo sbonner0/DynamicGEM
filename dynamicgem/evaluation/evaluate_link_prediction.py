@@ -1,6 +1,6 @@
 try: import cPickle as pickle
 except: import pickle
-from .metrics import *
+from .metrics import computeMAP, computePrecisionCurve
 from dynamicgem.utils import evaluation_util
 from dynamicgem.utils import graph_util
 import numpy as np
@@ -11,41 +11,25 @@ sys.path.insert(0, './')
 from dynamicgem.utils import embed_util
 
 
-def evaluateDynamicLinkPrediction(graph, 
-                                  embedding,
-                                 rounds,
-                                 n_sample_nodes=None,
-                                 no_python=False,
-                                 is_undirected=True,
-                                 sampling_scheme="u_rand"):
+def evaluateDynamicLinkPrediction(graph, embedding, n_sample_nodes=100, no_python=False, is_undirected=True, sampling_scheme="u_rand"):
+    """Evaluate the link prediction in a Dynamic Graph"""
+
     node_l = None
     if n_sample_nodes:
         if sampling_scheme == "u_rand":
-            test_digraph, node_l = graph_util.sample_graph(
-                graph,
-                n_sample_nodes
-            )
+            test_digraph, node_l = graph_util.sample_graph(graph, n_sample_nodes)
         else:
-            test_digraph, node_l = graph_util.sample_graph_rw_int(
-                graph,
-                n_sample_nodes
-            )
+            test_digraph, node_l = graph_util.sample_graph_rw_int(graph, n_sample_nodes)
+
     estimated_adj = embedding.predict_next_adj(node_l)
-    print(len(estimated_adj),np.shape(estimated_adj))
+    #print(len(estimated_adj),np.shape(estimated_adj))
 
-    predicted_edge_list = evaluation_util.getEdgeListFromAdjMtx(
-        estimated_adj,
-        is_undirected=is_undirected,
-        edge_pairs=None
-    )
-    print(len(predicted_edge_list), np.shape(predicted_edge_list) ,len(test_digraph.edges()),np.shape(test_digraph.edges()))
-    # pdb.set_trace()
+    predicted_edge_list = evaluation_util.getEdgeListFromAdjMtx(estimated_adj, is_undirected=is_undirected, edge_pairs=None)
+    #print(len(predicted_edge_list), np.shape(predicted_edge_list) ,len(test_digraph.edges()),np.shape(test_digraph.edges()))
 
-    MAP = metrics.computeMAP(predicted_edge_list, test_digraph)
-    prec_curv, _ = metrics.computePrecisionCurve(
-        predicted_edge_list,
-        test_digraph
-    )
+    MAP = computeMAP(predicted_edge_list, test_digraph)
+    prec_curv, _ = computePrecisionCurve(predicted_edge_list, test_digraph)
+    
     return (MAP, prec_curv)
 
 def evaluateDynamicLinkPrediction_TIMERS(graph, 

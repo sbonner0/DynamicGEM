@@ -37,9 +37,7 @@ import pdb
 from joblib import Parallel, delayed
 import operator
 
-# from theano.printing import debugprint as dbprint, pprint
 from time import time
-
 
 class AE(StaticGraphEmbedding):
 
@@ -87,8 +85,7 @@ class AE(StaticGraphEmbedding):
     def get_method_summary(self):
         return '%s_%d' % (self._method_name, self._d)
 
-    def learn_embeddings(self, graph=None, edge_f=None,
-                        is_weighted=False, no_python=False):
+    def learn_embeddings(self, graph=None, edge_f=None, is_weighted=False, no_python=False):
 
         # TensorFlow wizardry
         config = tf.ConfigProto()
@@ -141,13 +138,10 @@ class AE(StaticGraphEmbedding):
                 y_pred: Contains x_hat - x
                 y_true: Contains b
             '''
-            return KBack.sum(
-                KBack.square(y_pred * y_true[:, 0:self._node_num]),
-                axis=-1
-            )
+            return KBack.sum(KBack.square(y_pred * y_true[:, 0:self._node_num]), axis=-1)
 
         # Model
-        self._model = Model(input=x_in, output=x_diff)
+        self._model = Model(inputs=x_in, outputs=x_diff)
         sgd = SGD(lr=self._xeta, decay=1e-5, momentum=0.99, nesterov=True)
         adam = Adam(lr=self._xeta, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
         self._model.compile(optimizer=sgd, loss=weighted_mse_x)
@@ -156,9 +150,9 @@ class AE(StaticGraphEmbedding):
 
         history = self._model.fit_generator(
             generator=batch_generator_ae(S, self._beta, self._n_batch, True),
-            nb_epoch=self._num_iter,
-            samples_per_epoch=S.shape[0] // self._n_batch,
-            verbose=1,
+            epochs=self._num_iter,
+            steps_per_epoch=S.shape[0] // self._n_batch,
+            verbose=1
             # callbacks=[tensorboard]
             # callbacks=[callbacks.TerminateOnNaN()]
         )
@@ -288,8 +282,6 @@ if __name__ == '__main__':
                          type=str, 
                          default='./results_link_all', 
                          help="result directory name")
-
-
 
     args     = parser.parse_args()
     epochs   = args.epochs
