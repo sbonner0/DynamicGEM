@@ -6,6 +6,8 @@ import pickle
 import numpy as np
 import os
 
+import scipy.sparse as sp
+
 #import helper libraries
 from dynamicgem.utils      import graph_util, plot_util, dataprep_util
 from dynamicgem.evaluation import visualize_embedding as viz
@@ -44,13 +46,35 @@ dynamic_sbm_series = list(sbm.get_community_diminish_series_v2(node_num, communi
                                                           node_change_num))
 graphs = [g[0] for g in dynamic_sbm_series]
 print("Graph Generated!")
+
+print(type(graphs[0]))
 # parameters for the dynamic embedding
 # dimension of the embedding
 dim_emb  = 128
 lookback = 2
 
+def load_adj_graph(data_location):
+    """Load a given graph and return the adjacency matrix"""
+
+    adj = sp.load_npz(data_location)
+    return adj, None
 
 def main(args):
+
+    # Set the number of timesteps in the sequence
+    num_timesteps = args.seq_len - 1 # one timestep per pair of consecutive graphs
+    num_training_loops = num_timesteps - 1 # Num training loops to actually do (keep last graph for test/validation)
+
+    # Preload the training graphs into memory...not very scaleable but helps with CPU load
+    # Preload all but the last graph as this is use for val/test
+    graphs = []
+    for i in range(num_timesteps):
+        adj_train, features = load_adj_graph(f'data/{args.dataset}_t{i}.npz') # Load the input graph 
+        print(type(adj_train))
+        graphs.append(nx.from_scipy_sparse_matrix(adj_train), create_using=nx.DiGraph())
+        print(f'data/{args.dataset}_t{i} Loaded')
+    assert len(graphs) == num_timesteps #Should be the length of the time series as the index will start from zero
+    print("Training graphs loaded into memory")
 
     # Chose the model to run
     #AE Static ----------------------------------------------------------------------------
@@ -144,7 +168,7 @@ def main(args):
 
     #dynAERNN ------------------------------------------------------------------------------
     elif args.model == "DynAERNN":
-        
+
         embedding = DynAERNN(d   = dim_emb,
                     beta           = 5,
                     n_prev_graphs  = lookback,
@@ -180,6 +204,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--seed', type=int, default=2, help='Random seed.')
     parser.add_argument('--model', type=str, default='AE', help='Which model to train.')
+    parser.add_argument('--dataset', type=str, default='cora', help='Dataset string.')  
+    parser.add_argument('--seq_len', type=int, default=6, help='Length of the sequence to load.')  
+
     args = parser.parse_args()
 
     main(args)
