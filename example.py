@@ -67,6 +67,7 @@ embs  = []
 t1 = time()
 #ae static
 # Loop through each of the graphs in the time series
+print("Starting training AE")
 for temp_var in range(length-1):
     emb, _= embedding.learn_embeddings(graphs[temp_var])
     embs.append(emb)

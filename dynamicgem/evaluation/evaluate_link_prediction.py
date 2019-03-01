@@ -22,7 +22,11 @@ def evaluateDynamicLinkPrediction(graph, embedding, n_sample_nodes=100, no_pytho
             test_digraph, node_l = graph_util.sample_graph_rw_int(graph, n_sample_nodes)
 
     estimated_adj = embedding.predict_next_adj(node_l)
-    #print(len(estimated_adj),np.shape(estimated_adj))
+    # print(estimated_adj.shape)
+    # print(len(estimated_adj),np.shape(estimated_adj))
+
+    full_estimated_adj = embedding.predict_next_adj()
+    #print(full_estimated_adj)
 
     predicted_edge_list = evaluation_util.getEdgeListFromAdjMtx(estimated_adj, is_undirected=is_undirected, edge_pairs=None)
     #print(len(predicted_edge_list), np.shape(predicted_edge_list) ,len(test_digraph.edges()),np.shape(test_digraph.edges()))
