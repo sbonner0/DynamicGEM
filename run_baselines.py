@@ -9,7 +9,7 @@ import os
 import scipy.sparse as sp
 
 #import helper libraries
-from dynamicgem.utils      import graph_util, plot_util, dataprep_util
+from dynamicgem.utils      import graph_util, plot_util, dataprep_util, third_party_utils
 from dynamicgem.evaluation import visualize_embedding as viz
 from dynamicgem.evaluation.evaluate_link_prediction import evaluateDynamicLinkPrediction as LP
 from dynamicgem.visualization import plot_dynamic_sbm_embedding
@@ -53,12 +53,6 @@ print(type(graphs[0]))
 dim_emb  = 128
 lookback = 2
 
-def load_adj_graph(data_location):
-    """Load a given graph and return the adjacency matrix"""
-
-    adj = sp.load_npz(data_location)
-    return adj, None
-
 def main(args):
 
     # Set the number of timesteps in the sequence
@@ -69,12 +63,17 @@ def main(args):
     # Preload all but the last graph as this is use for val/test
     graphs = []
     for i in range(num_timesteps):
-        adj_train, features = load_adj_graph(f'data/{args.dataset}_t{i}.npz') # Load the input graph 
-        print(type(adj_train))
-        graphs.append(nx.from_scipy_sparse_matrix(adj_train), create_using=nx.DiGraph())
+        adj_train, features = third_party_utils.load_adj_graph(f'data/{args.dataset}_t{i}.npz') # Load the input graph 
+        graphs.append(nx.from_scipy_sparse_matrix(adj_train, create_using=nx.DiGraph()))
         print(f'data/{args.dataset}_t{i} Loaded')
     assert len(graphs) == num_timesteps #Should be the length of the time series as the index will start from zero
     print("Training graphs loaded into memory")
+
+    # Extract the val/test graph which is the final one in the sequence
+    val_test_graph, _ = third_party_utils.load_adj_graph(f'data/{args.dataset}_t{args.seq_len-1}.npz')
+    val_test_graph_adj, _, val_edges, val_edges_false, test_edges, test_edges_false = third_party_utils.mask_test_edges(val_test_graph)
+    val_test_graph = nx.from_scipy_sparse_matrix(val_test_graph_adj, create_using=nx.DiGraph())
+    print("Validation and Test edges capture from last graph in the sequence")
 
     # Chose the model to run
     #AE Static ----------------------------------------------------------------------------
@@ -98,7 +97,7 @@ def main(args):
         #ae static
         # Loop through each of the graphs in the time series
         print("Starting training AE")
-        for temp_var in range(length-1):
+        for temp_var in range(num_training_loops):
             emb, _= embedding.learn_embeddings(graphs[temp_var])
             embs.append(emb)
         print (embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
