@@ -1,5 +1,7 @@
 import numpy as np
 import scipy.sparse as sp
+from sklearn.metrics import (accuracy_score, average_precision_score,
+                             roc_auc_score)
 
 # ------------------------------------
 # Some functions borrowed from:
@@ -132,3 +134,29 @@ def mask_test_edges(adj, test_percent=10., val_percent=20.):
 
     # NOTE: these edge lists only contain single direction of edge!
     return adj_train, train_edges, val_edges, val_edges_false, test_edges, test_edges_false
+
+
+def eval_gae(edges_pos, edges_neg, model):
+    """Evaluate the GAE model via link prediction"""
+
+    adj_rec = model.predict_next_adj()
+    preds = []
+    
+    # Loop over the positive test edges
+    for e in edges_pos:
+        preds.append(adj_rec[e[0], e[1]])
+    
+    preds_neg = []
+
+    # Loop over the negative test edges
+    for e in edges_neg:
+        preds_neg.append(adj_rec[e[0], e[1]])
+
+    preds_all = np.hstack([preds, preds_neg])
+    labels_all = np.hstack([np.ones(len(preds)), np.zeros(len(preds))])
+
+    accuracy = accuracy_score(labels_all, (preds_all > 0.5).astype(float))
+    roc_score = roc_auc_score(labels_all, preds_all)
+    ap_score = average_precision_score(labels_all, preds_all)
+
+    return accuracy, roc_score, ap_score

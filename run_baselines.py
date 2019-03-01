@@ -5,13 +5,11 @@ import networkx as nx
 import pickle
 import numpy as np
 import os
-
 import scipy.sparse as sp
 
 #import helper libraries
 from dynamicgem.utils      import graph_util, plot_util, dataprep_util, third_party_utils
 from dynamicgem.evaluation import visualize_embedding as viz
-from dynamicgem.evaluation.evaluate_link_prediction import evaluateDynamicLinkPrediction as LP
 from dynamicgem.visualization import plot_dynamic_sbm_embedding
 from dynamicgem.evaluation import evaluate_graph_reconstruction as gr
 from dynamicgem.graph_generation import dynamic_SBM_graph as sbm
@@ -31,23 +29,7 @@ community_num      = 2
 node_change_num    = 10
 # Length of total time steps the graph will dynamically change
 length             = 7
-# output directory for result
-outdir = './output'
-intr='./intermediate'
-if not os.path.exists(outdir):
-    os.mkdir(outdir)
-if not os.path.exists(intr):
-    os.mkdir(intr)  
-testDataType = 'sbm_cd'
-#Generate the dynamic graph
 
-dynamic_sbm_series = list(sbm.get_community_diminish_series_v2(node_num, community_num, length, 
-                                                          1, #comminity ID to perturb
-                                                          node_change_num))
-graphs = [g[0] for g in dynamic_sbm_series]
-print("Graph Generated!")
-
-print(type(graphs[0]))
 # parameters for the dynamic embedding
 # dimension of the embedding
 dim_emb  = 128
@@ -86,25 +68,22 @@ def main(args):
                         K          = 3, 
                         n_units    = [500, 300, ],
                         n_iter     = 100, 
-                        xeta       = 1e-4,
+                        xeta       = 1e-5,
                         n_batch    = 100,
                         modelfile  = ['./intermediate/enc_modelsbm.json',
                                     './intermediate/dec_modelsbm.json'],
                         weightfile = ['./intermediate/enc_weightssbm.hdf5',
                                     './intermediate/dec_weightssbm.hdf5'])
-        embs  = []
         t1 = time()
         #ae static
-        # Loop through each of the graphs in the time series
+
+        # Loop through each of the graphs in the time series and train model 
         print("Starting training AE")
         for temp_var in range(num_training_loops):
             emb, _= embedding.learn_embeddings(graphs[temp_var])
-            embs.append(emb)
-        print (embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
-
-        #viz.plot_static_sbm_embedding(embs[-4:], dynamic_sbm_series[-4:])   
-        MAP, prec_curv = LP(graphs[-1], embedding)
-        print(f"MAP Value: {MAP}")
+            
+        print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
+        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
 
     #dynAE ------------------------------------------------------------------------------
     elif args.model == "DynAE":
