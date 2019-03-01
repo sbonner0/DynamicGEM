@@ -20,15 +20,6 @@ from dynamicgem.embedding.dynAE        import DynAE
 from dynamicgem.embedding.dynRNN       import DynRNN
 from dynamicgem.embedding.dynAERNN     import DynAERNN
 
-# Parameters for Stochastic block model graph
-# Todal of 1000 nodes
-node_num           = 1000
-# Test with two communities
-community_num      = 2
-# At each iteration migrate 10 nodes from one community to the another
-node_change_num    = 10
-# Length of total time steps the graph will dynamically change
-length             = 7
 
 # parameters for the dynamic embedding
 # dimension of the embedding
@@ -96,7 +87,7 @@ def main(args):
                         n_units        = [500, 300,],
                         rho            = 0.3,
                         n_iter         = 250,
-                        xeta           = 1e-4,
+                        xeta           = 1e-5,
                         n_batch        = 100,
                         modelfile      = ['./intermediate/enc_model_dynAE.json', 
                                         './intermediate/dec_model_dynAE.json'],
@@ -105,14 +96,13 @@ def main(args):
                         savefilesuffix = "testing" )
         embs = []
         t1 = time()
-        for temp_var in range(lookback+1, length+1):
-                        emb, _ = embedding.learn_embeddings(graphs[:temp_var])
-                        embs.append(emb)
-        print (embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
-        plt.figure()
-        plt.clf()    
-        plot_dynamic_sbm_embedding.plot_dynamic_sbm_embedding_v2(embs[-5:-1], dynamic_sbm_series[-5:])    
-        plt.show()
+        for temp_var in range(lookback+1, num_training_loops+1):
+            print(temp_var)
+            print(graphs[:temp_var])
+            emb, _ = embedding.learn_embeddings(graphs[:temp_var])
+            embs.append(emb)
+
+        print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
 
     #dynRNN ------------------------------------------------------------------------------
     elif args.model == "DynRNN":
@@ -135,14 +125,11 @@ def main(args):
                         savefilesuffix = "testing"  )
         embs = []
         t1 = time()
-        for temp_var in range(lookback+1, length+1):
-                        emb, _ = embedding.learn_embeddings(graphs[:temp_var])
-                        embs.append(emb)
-        print (embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
-        plt.figure()
-        plt.clf()    
-        plot_dynamic_sbm_embedding.plot_dynamic_sbm_embedding_v2(embs[-5:-1], dynamic_sbm_series[-5:])    
-        plt.show()
+        for temp_var in range(lookback+1, num_training_loops+1):
+            emb, _ = embedding.learn_embeddings(graphs[:temp_var])
+            embs.append(emb)
+
+        print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
 
     #dynAERNN ------------------------------------------------------------------------------
     elif args.model == "DynAERNN":
@@ -166,14 +153,10 @@ def main(args):
 
         embs = []
         t1 = time()
-        for temp_var in range(lookback+1, length+1):
+        for temp_var in range(lookback+1, num_training_loops+1):
                         emb, _ = embedding.learn_embeddings(graphs[:temp_var])
                         embs.append(emb)
         print (embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
-        plt.figure()
-        plt.clf()    
-        plot_dynamic_sbm_embedding.plot_dynamic_sbm_embedding_v2(embs[-5:-1], dynamic_sbm_series[-5:])    
-        plt.show()
 
 
 if __name__ == '__main__':
