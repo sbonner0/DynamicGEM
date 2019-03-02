@@ -46,7 +46,7 @@ def main(args):
     val_test_graph, _ = third_party_utils.load_adj_graph(f'data/{args.dataset}_t{args.seq_len-1}.npz')
     val_test_graph_adj, _, val_edges, val_edges_false, test_edges, test_edges_false = third_party_utils.mask_test_edges(val_test_graph)
     val_test_graph = nx.from_scipy_sparse_matrix(val_test_graph_adj, create_using=nx.DiGraph())
-    print("Validation and Test edges capture from last graph in the sequence")
+    print(f"Validation and Test edges capture from graph {args.dataset}_t{args.seq_len-1} in the sequence")
 
     # Chose the model to run
     #AE Static ----------------------------------------------------------------------------
@@ -94,15 +94,14 @@ def main(args):
                         weightfile     = ['./intermediate/enc_weights_dynAE.hdf5', 
                                         './intermediate/dec_weights_dynAE.hdf5'],
                         savefilesuffix = "testing" )
-        embs = []
         t1 = time()
         for temp_var in range(lookback+1, num_training_loops+1):
             print(temp_var)
             print(graphs[:temp_var])
             emb, _ = embedding.learn_embeddings(graphs[:temp_var])
-            embs.append(emb)
-
+            
         print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
+        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
 
     #dynRNN ------------------------------------------------------------------------------
     elif args.model == "DynRNN":
@@ -116,20 +115,20 @@ def main(args):
                         n_dec_units    = [500,300],
                         rho            = 0.3,
                         n_iter         = 250,
-                        xeta           = 1e-3,
+                        xeta           = 1e-4,
                         n_batch        = 100,
                         modelfile      = ['./intermediate/enc_model_dynRNN.json', 
                                         './intermediate/dec_model_dynRNN.json'],
                         weightfile     = ['./intermediate/enc_weights_dynRNN.hdf5', 
                                         './intermediate/dec_weights_dynRNN.hdf5'],
                         savefilesuffix = "testing"  )
-        embs = []
+
         t1 = time()
         for temp_var in range(lookback+1, num_training_loops+1):
             emb, _ = embedding.learn_embeddings(graphs[:temp_var])
-            embs.append(emb)
 
         print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
+        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
 
     #dynAERNN ------------------------------------------------------------------------------
     elif args.model == "DynAERNN":
@@ -151,12 +150,12 @@ def main(args):
                                     './intermediate/dec_weights_dynAERNN.hdf5'],
                     savefilesuffix = "testing")
 
-        embs = []
         t1 = time()
         for temp_var in range(lookback+1, num_training_loops+1):
                         emb, _ = embedding.learn_embeddings(graphs[:temp_var])
-                        embs.append(emb)
+
         print (embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
+        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
 
 
 if __name__ == '__main__':

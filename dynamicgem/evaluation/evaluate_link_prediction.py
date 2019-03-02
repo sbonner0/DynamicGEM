@@ -1,6 +1,7 @@
 try: import cPickle as pickle
 except: import pickle
-from .metrics import computeMAP, computePrecisionCurve
+from metrics import computeMAP, computePrecisionCurve
+import metrics
 from dynamicgem.utils import evaluation_util
 from dynamicgem.utils import graph_util
 import numpy as np
@@ -81,6 +82,7 @@ def expLP(graphs,
           no_python=False, 
           is_undirected=True,
           sampling_scheme="u_rand"):
+
     n_sample_nodes = int(n_sample_nodes)
     print('\tDynamic Link Prediction')
     summ_file = open('%s%s.dlpsumm' % (res_pre, m_summ), 'w')
@@ -90,19 +92,18 @@ def expLP(graphs,
     T_min = int(train_ratio_init * T)
     MAP = [None] * (T-T_min)
     prec_curv = [None] * (T-T_min)
+
     for i in range(T - T_min):
         MAP[i] = [None] * rounds
         prec_curv[i] = [None] * rounds
+
     for t in range(T_min, T):
+
         embedding.learn_embeddings(graphs[:t])
         for r_id in range(rounds):
-            MAP[t-T_min][r_id], prec_curv[t-T_min][r_id] = \
-                evaluateDynamicLinkPrediction(graphs[t], embedding,
-                                             rounds,
-                                             n_sample_nodes=n_sample_nodes,
-                                             no_python=no_python,
-                                             is_undirected=is_undirected,
-                                             sampling_scheme=sampling_scheme)
+
+            MAP[t-T_min][r_id], prec_curv[t-T_min][r_id] = evaluateDynamicLinkPrediction(graphs[t], embedding, n_sample_nodes, no_python, is_undirected, sampling_scheme)
+
         summ_file = open('%s%s.dlpsumm' % (res_pre, m_summ), 'a')
         summ_file.write('\tt=%d%f/%f\t%s\n' % (
             t - T_min,
