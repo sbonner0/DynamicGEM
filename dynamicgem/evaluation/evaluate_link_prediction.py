@@ -1,7 +1,6 @@
 try: import cPickle as pickle
 except: import pickle
-from metrics import computeMAP, computePrecisionCurve
-import metrics
+from .metrics import computeMAP, computePrecisionCurve
 from dynamicgem.utils import evaluation_util
 from dynamicgem.utils import graph_util
 import numpy as np
