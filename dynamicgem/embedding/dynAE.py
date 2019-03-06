@@ -110,10 +110,8 @@ class DynAE(DynamicGraphEmbedding):
         # Initialize self._model
         # Input
         x_in = Input(shape=(self._node_num,), name='x_in')
-        x_pred = Input(
-            shape=(self._node_num,),
-            name='x_pred'
-        )
+        x_pred = Input(shape=(self._node_num,), name='x_pred')
+        
         # Process inputs
         [x_hat, y] = self._autoencoder(x_in)
         # Outputs

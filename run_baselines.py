@@ -30,7 +30,7 @@ def main(args):
 
     # Set the number of timesteps in the sequence
     num_timesteps = args.seq_len - 1 # one timestep per pair of consecutive graphs
-    num_training_loops = num_timesteps - 1 # Num training loops to actually do (keep last graph for test/validation)
+    num_training_loops = num_timesteps #- 1 # Num training loops to actually do (keep last graph for test/validation)
 
     # Preload the training graphs into memory...not very scaleable but helps with CPU load
     # Preload all but the last graph as this is use for val/test

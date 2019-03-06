@@ -239,6 +239,7 @@ def model_batch_predictor_dynae_v2(model, graphs, batch_size):
         pdb.set_trace()
         
 def model_batch_predictor_dynae(model, graphs, batch_size):
+    
     n_samples = graphs[0].number_of_nodes()
     look_back = len(graphs)
     d = graphs[0].number_of_nodes()
