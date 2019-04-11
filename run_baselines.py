@@ -32,18 +32,20 @@ def main(args):
     num_timesteps = args.seq_len - 1 # one timestep per pair of consecutive graphs
     num_training_loops = num_timesteps #- 1 # Num training loops to actually do (keep last graph for test/validation)
 
+    data_loc = os.path.join(args.data_loc, args.dataset)
+
     # Preload the training graphs into memory...not very scaleable but helps with CPU load
     # Preload all but the last graph as this is use for val/test
     graphs = []
     for i in range(num_timesteps):
-        adj_train, features = third_party_utils.load_adj_graph(f'data/{args.dataset}_t{i}.npz') # Load the input graph 
+        adj_train, features = third_party_utils.load_adj_graph(f'{data_loc}_t{i}.npz') # Load the input graph 
         graphs.append(nx.from_scipy_sparse_matrix(adj_train, create_using=nx.DiGraph()))
-        print(f'data/{args.dataset}_t{i} Loaded')
+        print(f'{args.dataset}_t{i} Loaded')
     assert len(graphs) == num_timesteps #Should be the length of the time series as the index will start from zero
     print("Training graphs loaded into memory")
 
     # Extract the val/test graph which is the final one in the sequence
-    val_test_graph, _ = third_party_utils.load_adj_graph(f'data/{args.dataset}_t{args.seq_len-1}.npz')
+    val_test_graph, _ = third_party_utils.load_adj_graph(f'{data_loc}_t{args.seq_len-1}.npz')
     val_test_graph_adj, _, val_edges, val_edges_false, test_edges, test_edges_false = third_party_utils.mask_test_edges(val_test_graph)
     val_test_graph = nx.from_scipy_sparse_matrix(val_test_graph_adj, create_using=nx.DiGraph())
     print(f"Validation and Test edges capture from graph {args.dataset}_t{args.seq_len-1} in the sequence")
@@ -59,7 +61,7 @@ def main(args):
                         K          = 3, 
                         n_units    = [500, 300, ],
                         n_iter     = 100, 
-                        xeta       = 1e-5,
+                        xeta       = 1e-6,
                         n_batch    = 100,
                         modelfile  = ['./intermediate/enc_modelsbm.json',
                                     './intermediate/dec_modelsbm.json'],
@@ -164,7 +166,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--seed', type=int, default=2, help='Random seed.')
     parser.add_argument('--model', type=str, default='AE', help='Which model to train.')
-    parser.add_argument('--dataset', type=str, default='cora', help='Dataset string.')  
+    parser.add_argument('--dataset', type=str, default='cora', help='Dataset string.')
+    parser.add_argument('--data_loc', type=str, default='/data/Temporal-Graph-Data/proc-data/', help='Dataset location string.')
     parser.add_argument('--seq_len', type=int, default=6, help='Length of the sequence to load.')  
 
     args = parser.parse_args()
