@@ -52,6 +52,7 @@ def main(args):
 
     # Chose the model to run
     #AE Static ----------------------------------------------------------------------------
+    # None offset auto encoder seems to be
     if args.model == "AE":
 
         embedding = AE(d            = dim_emb, 
@@ -79,6 +80,7 @@ def main(args):
         print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
 
     #dynAE ------------------------------------------------------------------------------
+    # As proposed in dyngraph2vec paper. Seems to just be an offset dense auto encoder trained to predict next graph. 
     elif args.model == "DynAE":
 
         embedding= DynAE(d           = dim_emb,
@@ -106,6 +108,7 @@ def main(args):
         print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
 
     #dynRNN ------------------------------------------------------------------------------
+    # As proposed in dyngraph2vec paper. Only seems to use LSTM cells with no compression beforehand.
     elif args.model == "DynRNN":
 
         embedding= DynRNN(d        = dim_emb,
@@ -133,8 +136,9 @@ def main(args):
         print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
 
     #dynAERNN ------------------------------------------------------------------------------
+    # As proposed in dyngraph2vec paper. Use auto encoder before passing to an LSTM cell.
     elif args.model == "DynAERNN":
-
+        
         embedding = DynAERNN(d   = dim_emb,
                     beta           = 5,
                     n_prev_graphs  = lookback,
