@@ -30,7 +30,7 @@ def main(args):
 
     # Set the number of timesteps in the sequence
     num_timesteps = args.seq_len - 1 # one timestep per pair of consecutive graphs
-    num_training_loops = num_timesteps #- 1 # Num training loops to actually do (keep last graph for test/validation)
+    num_training_loops = num_timesteps - 1 # Num training loops to actually do (keep last graph for test/validation)
 
     data_loc = os.path.join(args.data_loc, args.dataset)
 
@@ -73,9 +73,10 @@ def main(args):
 
         # Loop through each of the graphs in the time series and train model 
         print("Starting training AE")
-        for temp_var in range(num_training_loops):
-            emb, _= embedding.learn_embeddings(graphs[temp_var])
-            
+        # for temp_var in range(num_training_loops):
+        #     emb, _= embedding.learn_embeddings(graphs[temp_var])
+
+        emb, _ = embedding.learn_embeddings(graphs[:num_training_loops])
         print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
         print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
 
@@ -99,10 +100,12 @@ def main(args):
                                         './intermediate/dec_weights_dynAE.hdf5'],
                         savefilesuffix = "testing" )
         t1 = time()
-        for temp_var in range(lookback+1, num_training_loops+1):
-            print(temp_var)
-            print(graphs[:temp_var])
-            emb, _ = embedding.learn_embeddings(graphs[:temp_var])
+        # for temp_var in range(lookback+1, num_training_loops+1):
+        #     print(temp_var)
+        #     print(graphs[:temp_var])
+        #     emb, _ = embedding.learn_embeddings(graphs[:temp_var])
+
+        emb, _ = embedding.learn_embeddings(graphs[:num_training_loops])
             
         print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
         print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
@@ -129,8 +132,10 @@ def main(args):
                         savefilesuffix = "testing"  )
 
         t1 = time()
-        for temp_var in range(lookback+1, num_training_loops+1):
-            emb, _ = embedding.learn_embeddings(graphs[:temp_var])
+        # for temp_var in range(lookback+1, num_training_loops+1):
+        #     emb, _ = embedding.learn_embeddings(graphs[:temp_var])
+        
+        emb, _ = embedding.learn_embeddings(graphs[:num_training_loops])
 
         print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
         print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
@@ -157,11 +162,16 @@ def main(args):
                     savefilesuffix = "testing")
 
         t1 = time()
-        for temp_var in range(lookback+1, num_training_loops+1):
-                        emb, _ = embedding.learn_embeddings(graphs[:temp_var])
+        # for temp_var in range(lookback+1, num_training_loops+1):
+        #                 emb, _ = embedding.learn_embeddings(graphs[:temp_var])
 
+        emb, _ = embedding.learn_embeddings(graphs[-num_training_loops:])
         print (embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
         print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
+
+        print(embedding.predict_next_adj())
+        print(embedding.predict_next_adj())
+        print(embedding.predict_next_adj())
 
 
 if __name__ == '__main__':

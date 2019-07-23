@@ -28,7 +28,6 @@ def load_adj_graph(data_location):
 def mask_test_edges(adj, test_percent=30., val_percent=20.):
     # Function to build test set with 10% positive links
     # NOTE: Splits are randomized and results might slightly deviate from reported numbers in the paper.
-    # TODO: Clean up.
 
     # Remove diagonal elements
     adj = adj - sp.dia_matrix((adj.diagonal()[None, :], [0]), shape=adj.shape)
