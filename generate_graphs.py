@@ -12,9 +12,9 @@ def generate_SBM_graphs():
     # Total of 1000 nodes
     node_num           = 3000
     # Test with two communities
-    community_num      = 2
+    community_num      = 3
     # At each iteration migrate 10 nodes from one community to the another
-    node_change_num    = 10
+    node_change_num    = 20
     # Length of total time steps the graph will dynamically change
     length             = 30
     # output directory for result

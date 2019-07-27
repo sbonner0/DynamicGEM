@@ -153,7 +153,7 @@ def eval_gae(edges_pos, edges_neg, model):
         preds_neg.append(adj_rec[e[0], e[1]])
 
     preds_all = np.hstack([preds, preds_neg])
-    labels_all = np.hstack([np.ones(len(preds)), np.zeros(len(preds))])
+    labels_all = np.hstack([np.ones(len(preds)), np.zeros(len(preds_neg))])
 
     accuracy = accuracy_score(labels_all, (preds_all > 0.5).astype(float))
     roc_score = roc_auc_score(labels_all, preds_all)

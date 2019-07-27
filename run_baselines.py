@@ -23,10 +23,15 @@ from dynamicgem.embedding.dynAERNN     import DynAERNN
 
 # parameters for the dynamic embedding
 # dimension of the embedding
-dim_emb  = 128
-lookback = 2
+dim_emb  = 16
+lookback = 1
 
 def main(args):
+
+    # Set seeds
+    np.random.seed(args.seed)
+    from tensorflow import set_random_seed
+    set_random_seed(args.seed)
 
     # Set the number of timesteps in the sequence
     num_timesteps = args.seq_len - 1 # one timestep per pair of consecutive graphs
@@ -45,9 +50,8 @@ def main(args):
     print("Training graphs loaded into memory")
 
     # Extract the val/test graph which is the final one in the sequence
-    val_test_graph, _ = third_party_utils.load_adj_graph(f'{data_loc}_t{args.seq_len-1}.npz')
+    val_test_graph, _ = third_party_utils.load_adj_graph(f'{data_loc}_t{num_timesteps}.npz')
     val_test_graph_adj, _, val_edges, val_edges_false, test_edges, test_edges_false = third_party_utils.mask_test_edges(val_test_graph)
-    val_test_graph = nx.from_scipy_sparse_matrix(val_test_graph_adj, create_using=nx.DiGraph())
     print(f"Validation and Test edges capture from graph {args.dataset}_t{args.seq_len-1} in the sequence")
 
     # Chose the model to run
@@ -150,7 +154,7 @@ def main(args):
                     nu1            = 1e-6,
                     nu2            = 1e-6,
                     n_aeunits      = [500, 300],
-                    n_lstmunits    = [500,dim_emb],
+                    n_lstmunits    = [500, dim_emb],
                     rho            = 0.3,
                     n_iter         = 250,
                     xeta           = 1e-3,
@@ -168,10 +172,6 @@ def main(args):
         emb, _ = embedding.learn_embeddings(graphs[-num_training_loops:])
         print (embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
         print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
-
-        print(embedding.predict_next_adj())
-        print(embedding.predict_next_adj())
-        print(embedding.predict_next_adj())
 
 
 if __name__ == '__main__':
