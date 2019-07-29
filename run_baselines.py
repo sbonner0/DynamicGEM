@@ -12,6 +12,7 @@ from dynamicgem.utils      import graph_util, plot_util, dataprep_util, third_pa
 from dynamicgem.evaluation import visualize_embedding as viz
 from dynamicgem.visualization import plot_dynamic_sbm_embedding
 from dynamicgem.evaluation import evaluate_graph_reconstruction as gr
+from dynamicgem.evaluation import evaluate_link_prediction as lp
 from dynamicgem.graph_generation import dynamic_SBM_graph as sbm
 
 #import the methods
@@ -168,6 +169,8 @@ def main(args):
         t1 = time()
         # for temp_var in range(lookback+1, num_training_loops+1):
         #                 emb, _ = embedding.learn_embeddings(graphs[:temp_var])
+
+        lp.expLP(graphs, embedding, 2, 0, 0)
 
         emb, _ = embedding.learn_embeddings(graphs[-num_training_loops:])
 

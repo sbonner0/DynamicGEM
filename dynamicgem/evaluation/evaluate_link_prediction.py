@@ -84,9 +84,9 @@ def expLP(graphs,
 
     n_sample_nodes = int(n_sample_nodes)
     print('\tDynamic Link Prediction')
-    summ_file = open('%s%s.dlpsumm' % (res_pre, m_summ), 'w')
-    summ_file.write('Method\t%s\n' % metrics.getMetricsHeader())
-    summ_file.close()
+    # summ_file = open('%s%s.dlpsumm' % (res_pre, m_summ), 'w')
+    # summ_file.write('Method\t%s\n' % metrics.getMetricsHeader())
+    # summ_file.close()
     T = len(graphs)
     T_min = int(train_ratio_init * T)
     MAP = [None] * (T-T_min)
@@ -103,17 +103,18 @@ def expLP(graphs,
 
             MAP[t-T_min][r_id], prec_curv[t-T_min][r_id] = evaluateDynamicLinkPrediction(graphs[t], embedding, n_sample_nodes, no_python, is_undirected, sampling_scheme)
 
-        summ_file = open('%s%s.dlpsumm' % (res_pre, m_summ), 'a')
-        summ_file.write('\tt=%d%f/%f\t%s\n' % (
-            t - T_min,
-            np.mean(MAP[t-T_min]),
-            np.std(MAP[t-T_min]),
-            metrics.getPrecisionReport(
-                prec_curv[t-T_min][0],
-                len(prec_curv[t-T_min][0])
-            )
-        ))
-        summ_file.close()
+        print(f'!!!!!!!!!!MAP: {np.mean(np.array(MAP[t-T_min][r_id]))}')
+        # summ_file = open('%s%s.dlpsumm' % (res_pre, m_summ), 'a')
+        # summ_file.write('\tt=%d%f/%f\t%s\n' % (
+        #     t - T_min,
+        #     np.mean(MAP[t-T_min]),
+        #     np.std(MAP[t-T_min]),
+        #     metrics.getPrecisionReport(
+        #         prec_curv[t-T_min][0],
+        #         len(prec_curv[t-T_min][0])
+        #     )
+        # ))
+        # summ_file.close()
     # pickle.dump([MAP, prec_curv],
     #             open('%s_%s_%s.lp' % (res_pre, m_summ, sampling_scheme),
     #                  'wb'))
