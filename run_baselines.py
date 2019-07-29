@@ -153,8 +153,8 @@ def main(args):
                     n_prev_graphs  = lookback,
                     nu1            = 1e-6,
                     nu2            = 1e-6,
-                    n_aeunits      = [500, 300],
-                    n_lstmunits    = [500, dim_emb],
+                    n_aeunits      = [32, 16],
+                    n_lstmunits    = [32, dim_emb],
                     rho            = 0.3,
                     n_iter         = 250,
                     xeta           = 1e-3,
@@ -170,8 +170,9 @@ def main(args):
         #                 emb, _ = embedding.learn_embeddings(graphs[:temp_var])
 
         emb, _ = embedding.learn_embeddings(graphs[-num_training_loops:])
-        print (embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
-        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
+
+        print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
+        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
 
 
 if __name__ == '__main__':

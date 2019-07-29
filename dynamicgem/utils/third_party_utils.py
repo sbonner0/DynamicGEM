@@ -136,10 +136,17 @@ def mask_test_edges(adj, test_percent=30., val_percent=20.):
     # NOTE: these edge lists only contain single direction of edge!
     return adj_train, train_edges, val_edges, val_edges_false, test_edges, test_edges_false
 
-def eval_gae(edges_pos, edges_neg, model):
+def eval_gae(edges_pos, edges_neg, model, use_embeddings=True):
     """Evaluate the GAE model via link prediction"""
 
-    adj_rec = model.predict_next_adj()
+    if use_embeddings:
+        emb = model.get_embeddings()
+        def sigmoid(x):
+            return 1 / (1 + np.exp(-x))
+        # Predict on test set of edges
+        adj_rec = np.dot(emb, emb.T)
+    else:
+        adj_rec = model.predict_next_adj()
     preds = []
     
     # Loop over the positive test edges
