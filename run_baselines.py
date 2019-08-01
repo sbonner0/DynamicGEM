@@ -123,10 +123,9 @@ def main(args):
         #     print(graphs[:temp_var])
         #     emb, _ = embedding.learn_embeddings(graphs[:temp_var])
 
-        emb, _ = embedding.learn_embeddings(graphs[:num_training_loops])
-            
-        print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
-        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
+        emb, _ = embedding.learn_embeddings(graphs[:num_training_loops])      
+        print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
+        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
 
     #dynRNN ------------------------------------------------------------------------------
     # As proposed in dyngraph2vec paper. Only seems to use LSTM cells with no compression beforehand.
@@ -156,7 +155,8 @@ def main(args):
         emb, _ = embedding.learn_embeddings(graphs[:num_training_loops])
 
         print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
-        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
+        print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
+        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
 
     #dynAERNN ------------------------------------------------------------------------------
     # As proposed in dyngraph2vec paper. Use auto encoder before passing to an LSTM cell.
@@ -189,7 +189,7 @@ def main(args):
 
         print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
         print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
-
+        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
 
 if __name__ == '__main__':
 

@@ -134,6 +134,7 @@ class DynAE(DynamicGraphEmbedding):
 
         # Model
         self._model = Model(inputs=[x_in, x_pred], outputs=x_diff)
+        print(f'Number of Model Params: {self._model.count_params()}')
         sgd = SGD(lr=self._xeta, decay=1e-5, momentum=0.99, nesterov=True)
         adam = Adam(lr=self._xeta, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
         self._model.compile(optimizer=sgd, loss=weighted_mse_x)
