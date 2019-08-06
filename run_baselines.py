@@ -21,7 +21,6 @@ from dynamicgem.embedding.dynAE        import DynAE
 from dynamicgem.embedding.dynRNN       import DynRNN
 from dynamicgem.embedding.dynAERNN     import DynAERNN
 
-
 # parameters for the dynamic embedding
 # dimension of the embedding
 dim_emb  = 128
@@ -98,6 +97,9 @@ def main(args):
         print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
         print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding))
 
+        accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
+        ae_accuracy, ae_roc_score, ae_ap_score, ae_tn, ae_fp, ae_fn, ae_tp = third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False)
+
     #dynAE ------------------------------------------------------------------------------
     # As proposed in dyngraph2vec paper. Seems to just be an offset dense auto encoder trained to predict next graph. 
     elif args.model == "DynAE":
@@ -126,6 +128,9 @@ def main(args):
         emb, _ = embedding.learn_embeddings(graphs[:num_training_loops])      
         print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
         print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
+
+        accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
+        ae_accuracy, ae_roc_score, ae_ap_score, ae_tn, ae_fp, ae_fn, ae_tp = third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False)
 
     #dynRNN ------------------------------------------------------------------------------
     # As proposed in dyngraph2vec paper. Only seems to use LSTM cells with no compression beforehand.
@@ -157,6 +162,9 @@ def main(args):
         print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
         print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
         print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
+
+        accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
+        ae_accuracy, ae_roc_score, ae_ap_score, ae_tn, ae_fp, ae_fn, ae_tp = third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False)
 
     #dynAERNN ------------------------------------------------------------------------------
     # As proposed in dyngraph2vec paper. Use auto encoder before passing to an LSTM cell.
@@ -190,6 +198,11 @@ def main(args):
         print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
         print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
         print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
+
+        accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
+        ae_accuracy, ae_roc_score, ae_ap_score, ae_tn, ae_fp, ae_fn, ae_tp = third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False)
+
+    return accuracy, roc_score, ap_score, tn, fp, fn, tp, ae_accuracy, ae_roc_score, ae_ap_score, ae_tn, ae_fp, ae_fn, ae_tp
 
 if __name__ == '__main__':
 

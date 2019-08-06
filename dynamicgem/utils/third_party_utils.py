@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.sparse as sp
 from sklearn.metrics import (accuracy_score, average_precision_score,
-                             roc_auc_score)
+                             roc_auc_score, confusion_matrix)
 
 # ------------------------------------
 # Some functions borrowed from:
@@ -136,7 +136,7 @@ def mask_test_edges(adj, test_percent=30., val_percent=20.):
     # NOTE: these edge lists only contain single direction of edge!
     return adj_train, train_edges, val_edges, val_edges_false, test_edges, test_edges_false
 
-def eval_gae(edges_pos, edges_neg, model, use_embeddings=True):
+def eval_gae(edges_pos, edges_neg, model, use_embeddings=False):
     """Evaluate the GAE model via link prediction"""
 
     if use_embeddings:
@@ -165,5 +165,6 @@ def eval_gae(edges_pos, edges_neg, model, use_embeddings=True):
     accuracy = accuracy_score(labels_all, (preds_all > 0.5).astype(float))
     roc_score = roc_auc_score(labels_all, preds_all)
     ap_score = average_precision_score(labels_all, preds_all)
+    tn, fp, fn, tp = confusion_matrix(labels_all, (preds_all > 0.5).astype(float)).ravel()
 
-    return accuracy, roc_score, ap_score
+    return accuracy, roc_score, ap_score, tn, fp, fn, tp
