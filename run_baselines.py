@@ -1,25 +1,26 @@
 import argparse
-import matplotlib.pyplot as plt
-from time import time
-import networkx as nx
-import pickle
-import numpy as np
 import os
-import scipy.sparse as sp
+import pickle
+from collections import defaultdict
+from time import time
 
-#import helper libraries
-from dynamicgem.utils      import graph_util, plot_util, dataprep_util, third_party_utils
-from dynamicgem.evaluation import visualize_embedding as viz
-from dynamicgem.visualization import plot_dynamic_sbm_embedding
-from dynamicgem.evaluation import evaluate_graph_reconstruction as gr
-from dynamicgem.evaluation import evaluate_link_prediction as lp
-from dynamicgem.graph_generation import dynamic_SBM_graph as sbm
+import networkx as nx
+import numpy as np
 
 #import the methods
-from dynamicgem.embedding.ae_static    import AE
-from dynamicgem.embedding.dynAE        import DynAE
-from dynamicgem.embedding.dynRNN       import DynRNN
-from dynamicgem.embedding.dynAERNN     import DynAERNN
+from dynamicgem.embedding.ae_static import AE
+from dynamicgem.embedding.dynAE import DynAE
+from dynamicgem.embedding.dynAERNN import DynAERNN
+from dynamicgem.embedding.dynRNN import DynRNN
+
+from dynamicgem.evaluation import evaluate_graph_reconstruction as gr
+from dynamicgem.evaluation import evaluate_link_prediction as lp
+from dynamicgem.evaluation import visualize_embedding as viz
+from dynamicgem.graph_generation import dynamic_SBM_graph as sbm
+#import helper libraries
+from dynamicgem.utils import (dataprep_util, graph_util, plot_util,
+                              third_party_utils)
+from dynamicgem.visualization import plot_dynamic_sbm_embedding
 
 # parameters for the dynamic embedding
 # dimension of the embedding
@@ -63,7 +64,6 @@ def main(args):
 
     num_edges = len(new_edges)
     new_edges_false = test_edges[:num_edges]
-
 
     print(f"Validation and Test edges capture from graph {args.dataset}_t{args.seq_len-1} in the sequence")
 
@@ -216,5 +216,35 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    main(args)
+    results = defaultdict(list)
 
+    # Here we loop over all combinates of 0...t
+    time_range = args.seq_len
+    for i in range(8, time_range):
+        
+        # Set the maximum sequence length
+        args.seq_len = i
+
+        # run the model
+        acc_list, roc_list, ap_list, tn_list, fp_list, fn_list, tp_list, ae_acc_list, ae_roc_list, ae_ap_list, ae_tn_list, ae_fp_list, ae_fn_list, ae_tp_list = main(args)
+
+        # Store the results!
+        # This will be a list of lists, where first dimension is the time
+        results['acc_list'].append(acc_list)
+        results['roc_list'].append(roc_list)
+        results['ap_list'].append(ap_list)
+        results['tn_list'].append(tn_list)
+        results['fp_list'].append(fp_list)
+        results['fn_list'].append(fn_list)
+        results['tp_list'].append(tp_list)
+
+        # Store the results for new and old edges
+        results['ae_acc_list'].append(ae_acc_list)
+        results['ae_roc_list'].append(ae_roc_list)
+        results['ae_ap_list'].append(ae_ap_list)
+        results['ae_tn_list'].append(ae_tn_list)
+        results['ae_fp_list'].append(ae_fp_list)
+        results['ae_fn_list'].append(ae_fn_list)
+        results['ae_tp_list'].append(ae_tp_list)
+
+        pickle.dump(results, open(f'{args.dataset}_{args.model}_results.pickle', 'wb'))
