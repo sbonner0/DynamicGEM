@@ -170,26 +170,26 @@ class DynAE(DynamicGraphEmbedding):
             )
         t2 = time()
         # Save the autoencoder and its weights
-        if(self._weightfile is not None):
-            saveweights(self._encoder, self._weightfile[0])
-            saveweights(self._decoder, self._weightfile[1])
-        if(self._modelfile is not None):
-            savemodel(self._encoder, self._modelfile[0])
-            savemodel(self._decoder, self._modelfile[1])
-        if(self._savefilesuffix is not None):
-            saveweights(self._encoder,
-                        'encoder_weights_' + self._savefilesuffix + '.hdf5')
-            saveweights(self._decoder,
-                        'decoder_weights_' + self._savefilesuffix + '.hdf5')
-            savemodel(self._encoder,
-                      'encoder_model_' + self._savefilesuffix + '.json')
-            savemodel(self._decoder,
-                      'decoder_model_' + self._savefilesuffix + '.json')
-            # Save the embedding
-            np.savetxt('embedding_' + self._savefilesuffix + '.txt',
-                       self._Y)
-            np.savetxt('next_pred_' + self._savefilesuffix + '.txt',
-                       self._next_adj)
+        # if(self._weightfile is not None):
+        #     saveweights(self._encoder, self._weightfile[0])
+        #     saveweights(self._decoder, self._weightfile[1])
+        # if(self._modelfile is not None):
+        #     savemodel(self._encoder, self._modelfile[0])
+        #     savemodel(self._decoder, self._modelfile[1])
+        # if(self._savefilesuffix is not None):
+        #     saveweights(self._encoder,
+        #                 'encoder_weights_' + self._savefilesuffix + '.hdf5')
+        #     saveweights(self._decoder,
+        #                 'decoder_weights_' + self._savefilesuffix + '.hdf5')
+        #     savemodel(self._encoder,
+        #               'encoder_model_' + self._savefilesuffix + '.json')
+        #     savemodel(self._decoder,
+        #               'decoder_model_' + self._savefilesuffix + '.json')
+        #     # Save the embedding
+        #     np.savetxt('embedding_' + self._savefilesuffix + '.txt',
+        #                self._Y)
+        #     np.savetxt('next_pred_' + self._savefilesuffix + '.txt',
+        #                self._next_adj)
 
         # Clean up the model to try and save memory
         del self._model

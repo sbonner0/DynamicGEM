@@ -127,7 +127,8 @@ def main(args):
 
         emb, _ = embedding.learn_embeddings(graphs[:num_training_loops]) 
 
-        if new_edges is not None:
+        if new_edges.size != 0:
+            print("Here yo")
             accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
             print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
         else:
@@ -163,7 +164,7 @@ def main(args):
         
         emb, _ = embedding.learn_embeddings(graphs[:num_training_loops])
 
-        if new_edges is not None:
+        if new_edges.size != 0:
             accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
             print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
         else:
@@ -201,7 +202,7 @@ def main(args):
 
         emb, _ = embedding.learn_embeddings(graphs[:num_training_loops])
 
-        if new_edges is not None:
+        if new_edges.size != 0:
             accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
             print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
         else:
