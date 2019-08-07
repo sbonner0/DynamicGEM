@@ -1,6 +1,6 @@
 disp_avlbl = True
 from os import environ
-
+import gc
 if 'DISPLAY' not in environ:
     disp_avlbl = False
     import matplotlib
@@ -95,7 +95,7 @@ class DynAERNN(DynamicGraphEmbedding):
         config.gpu_options.allow_growth = True
          
         # Only allow a total of half the GPU memory to be allocated
-        config.gpu_options.per_process_gpu_memory_fraction = 0.2
+        config.gpu_options.per_process_gpu_memory_fraction = 1.0
 
         # Create a session to pass the above configuration
         # sess=tf.Session(config=config)
@@ -240,7 +240,16 @@ class DynAERNN(DynamicGraphEmbedding):
             #            self._Y)
             # np.savetxt('next_pred_' + self._savefilesuffix + '.txt',
             #            self._next_adj)
-        # sess.close()
+
+        # Clean up the model to try and save memory
+        del self._model
+        del self._autoencoder
+        del self._aeencoders
+        del self._lstmencoder
+        del self._aedecoder
+        KBack.clear_session()
+        gc.collect()
+
         return self._Y, (t2 - t1)
 
     def get_embeddings(self):

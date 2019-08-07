@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 import scipy.io as sio
+import gc
 
 import sys
 import os
@@ -89,7 +90,7 @@ class DynAE(DynamicGraphEmbedding):
         config.gpu_options.allow_growth = True
          
         # Only allow a total of half the GPU memory to be allocated
-        config.gpu_options.per_process_gpu_memory_fraction = 0.1
+        config.gpu_options.per_process_gpu_memory_fraction = 1.0
          
         # Create a session with the above options specified.
         KBack.tensorflow_backend.set_session(tf.Session(config=config))
@@ -189,6 +190,15 @@ class DynAE(DynamicGraphEmbedding):
                        self._Y)
             np.savetxt('next_pred_' + self._savefilesuffix + '.txt',
                        self._next_adj)
+
+        # Clean up the model to try and save memory
+        del self._model
+        del self._autoencoder
+        del self._decoder
+        del self._encoder
+        KBack.clear_session()
+        gc.collect()
+
         return self._Y, (t2 - t1)
 
     def get_embeddings(self):

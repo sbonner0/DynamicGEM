@@ -5,7 +5,7 @@ if 'DISPLAY' not in environ:
     import matplotlib
     matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
+import gc
 import numpy as np
 import scipy.io as sio
 import os
@@ -28,7 +28,7 @@ from keras.optimizers import SGD, Adam
 from keras import callbacks
 from keras import backend as KBack
 from .dnn_utils import *
-# import tensorflow as tf
+import tensorflow as tf
 from tensorflow.python import debug as tf_debug
 import operator
 import pdb
@@ -84,17 +84,13 @@ class DynRNN(DynamicGraphEmbedding):
 
         ###################################
         # TensorFlow wizardry
-#         config = tf.ConfigProto()
+        config = tf.ConfigProto()
          
         # Don't pre-allocate memory; allocate as-needed
-#         config.gpu_options.allow_growth = True
+        config.gpu_options.allow_growth = True
          
         # Only allow a total of half the GPU memory to be allocated
-#         config.gpu_options.per_process_gpu_memory_fraction = 0.2
-         
-        # Create a session with the above options specified.
-#         KBack.tensorflow_backend.set_session(tf.Session(config=config))
-
+        config.gpu_options.per_process_gpu_memory_fraction = 1.0
 
         # Create a session to pass the above configuration
         # sess=tf.Session(config=config)
@@ -102,6 +98,8 @@ class DynRNN(DynamicGraphEmbedding):
         # Create a tensorflow debugger wrapper
         # sess = tf_debug.LocalCLIDebugWrapperSession(sess) 
         
+        # Create a session with the above options specified.
+        KBack.tensorflow_backend.set_session(tf.Session(config=config))
         # Create a session with the above options specified.
         ###################################
 
@@ -222,7 +220,15 @@ class DynRNN(DynamicGraphEmbedding):
                        self._Y)
             np.savetxt('next_pred_' + self._savefilesuffix + '.txt',
                        self._next_adj)
-        # sess.close()
+        
+        # Clean up the model to try and save memory
+        del self._model
+        del self._autoencoder
+        del self._decoder
+        del self._encoder
+        KBack.clear_session()
+        gc.collect()
+
         return self._Y, (t2 - t1)
 
     def get_embeddings(self):
