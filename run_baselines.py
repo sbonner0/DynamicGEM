@@ -125,12 +125,16 @@ def main(args):
         #     print(graphs[:temp_var])
         #     emb, _ = embedding.learn_embeddings(graphs[:temp_var])
 
-        emb, _ = embedding.learn_embeddings(graphs[:num_training_loops])      
-        print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
-        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
+        emb, _ = embedding.learn_embeddings(graphs[:num_training_loops]) 
 
-        accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
+        if new_edges is not None:
+            accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
+            print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
+        else:
+            accuracy, roc_score, ap_score, tn, fp, fn, tp = 0,0,0,0,0,0,0 
+
         ae_accuracy, ae_roc_score, ae_ap_score, ae_tn, ae_fp, ae_fn, ae_tp = third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False)
+        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
 
     #dynRNN ------------------------------------------------------------------------------
     # As proposed in dyngraph2vec paper. Only seems to use LSTM cells with no compression beforehand.
@@ -159,12 +163,14 @@ def main(args):
         
         emb, _ = embedding.learn_embeddings(graphs[:num_training_loops])
 
-        print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
-        print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
-        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
+        if new_edges is not None:
+            accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
+            print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
+        else:
+            accuracy, roc_score, ap_score, tn, fp, fn, tp = 0,0,0,0,0,0,0 
 
-        accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
         ae_accuracy, ae_roc_score, ae_ap_score, ae_tn, ae_fp, ae_fn, ae_tp = third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False)
+        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
 
     #dynAERNN ------------------------------------------------------------------------------
     # As proposed in dyngraph2vec paper. Use auto encoder before passing to an LSTM cell.
@@ -195,12 +201,14 @@ def main(args):
 
         emb, _ = embedding.learn_embeddings(graphs[:num_training_loops])
 
-        print(embedding._method_name+':\n\tTraining time: %f' % (time() - t1))
-        print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
-        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
+        if new_edges is not None:
+            accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
+            print(third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False))
+        else:
+            accuracy, roc_score, ap_score, tn, fp, fn, tp = 0,0,0,0,0,0,0 
 
-        accuracy, roc_score, ap_score, tn, fp, fn, tp = third_party_utils.eval_gae(new_edges, new_edges_false, embedding, use_embeddings=False)
         ae_accuracy, ae_roc_score, ae_ap_score, ae_tn, ae_fp, ae_fn, ae_tp = third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False)
+        print(third_party_utils.eval_gae(test_edges, test_edges_false, embedding, use_embeddings=False))
 
     return accuracy, roc_score, ap_score, tn, fp, fn, tp, ae_accuracy, ae_roc_score, ae_ap_score, ae_tn, ae_fp, ae_fn, ae_tp
 
@@ -217,6 +225,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     results = defaultdict(list)
+
+    print(f'Dataset = {args.dataset}')
 
     # Here we loop over all combinates of 0...t
     time_range = args.seq_len
@@ -248,3 +258,5 @@ if __name__ == '__main__':
         results['ae_tp_list'].append(ae_tp_list)
 
         pickle.dump(results, open(f'{args.dataset}_{args.model}_results.pickle', 'wb'))
+
+    print("RUN COMPLETE!")
